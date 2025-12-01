@@ -38,6 +38,16 @@ def genera_feedback(scelta: str) -> str:
     else:
         return "Risposta sbagliata, ritenta!"
 
+def mostra_feedback(messaggio: str) -> None:
+    """
+    Restituisce il feedback formattato nella maniera desiderata
+    """
+    symbol : str = "*"*30
+    print(f"""
+{symbol}
+{messaggio}
+{symbol}
+          """)
 
 mostra_domanda()    
 risposta_da_validare : str = raccogli_risposta()
@@ -49,4 +59,4 @@ if risposta_validata == True :
 else:
     feedback = "Inserisci solo la risposta tra le optioni elencate"
 
-print(feedback)
+mostra_feedback(feedback)
