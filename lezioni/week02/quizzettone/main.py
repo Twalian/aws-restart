@@ -49,14 +49,18 @@ def mostra_feedback(messaggio: str) -> None:
 {symbol}
           """)
 
-mostra_domanda()    
-risposta_da_validare : str = raccogli_risposta()
-risposta_validata : bool = valida_scelta(risposta_da_validare)
-feedback : str = ""
+def main() :
+    mostra_domanda()    
+    risposta_da_validare : str = raccogli_risposta()
+    risposta_validata : bool = valida_scelta(risposta_da_validare)
+    feedback : str = ""
 
-if risposta_validata == True : 
-    feedback = genera_feedback(risposta_da_validare)
-else:
-    feedback = "Inserisci solo la risposta tra le optioni elencate"
+    if risposta_validata == True : 
+        feedback = genera_feedback(risposta_da_validare)
+    else:
+        feedback = "Inserisci solo la risposta tra le optioni elencate"
 
-mostra_feedback(feedback)
+    mostra_feedback(feedback)
+
+#Entry point del nostro programma
+main()
