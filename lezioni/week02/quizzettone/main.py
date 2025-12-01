@@ -29,14 +29,23 @@ def valida_scelta(scelta: str) -> bool:
     else:
         return False
     
-def genera_feedback(scelta: str) -> str:
+def genera_feedback(is_corretta : bool) -> str:
     """
-    Questa funzione restituisce una stringa con un feedback personalizzato, indicando all'utente se ha risposto correttamente o meno. Questa funzione viene eseguita solo se la funzione di validazione restituisce true
+    Questa funzione restituisce una stringa con un feedback personalizzato, indicando all'utente se ha risposto correttamente o meno. Questa funzione viene eseguita solo se la funzione di validazione valida_scelta() restituisce true
     """
-    if scelta.upper() == "A":
+    if is_corretta == True:
         return "Risposta corretta!"
     else:
         return "Risposta sbagliata, ritenta!"
+    
+def is_risposta_esatta(scelta : str) -> bool :
+    """
+    Questa funzione restituisce True se la risposta dell'utente è corretta
+    """
+    if scelta.upper() == "A":
+        return True
+    else:
+        return False
 
 def mostra_feedback(messaggio: str) -> None:
     """
@@ -58,12 +67,10 @@ def main() :
         mostra_domanda()    
         risposta_da_validare : str = raccogli_risposta()
         risposta_validata : bool = valida_scelta(risposta_da_validare)
-        feedback : str = ""
-
+    
         if risposta_validata == True : 
-            feedback = genera_feedback(risposta_da_validare)
-            if feedback == "Risposta corretta!" :
-                is_risposta_corretta = True
+            is_risposta_corretta = is_risposta_esatta(risposta_da_validare)
+            feedback = genera_feedback(is_risposta_corretta)
         else:
             feedback = "Inserisci solo la risposta tra le optioni elencate"
 
