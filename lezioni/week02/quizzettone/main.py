@@ -1,16 +1,23 @@
-def mostra_domanda() -> None:
+def leggi_file() -> str :
+    with open("domanda-1.txt", "r") as file :
+        content = file.read()
+        return content
+    #print(len(content))
+
+def estrai_index(content : str) -> int :
+    return content.index("£")
+   
+def estrai_domanda(content : str, index : int) -> str:
+    return content[0:index]
+
+def estrai_risposta(content : str, index : int) -> str:
+    return content[index+1:]
+    
+def mostra_domanda(domanda : str) -> None:
     """
     Questa funzione restituisce la domanda e le optioni di risposta
     """
-    print(
-"""
-Chi parteciperà a Sanremo?"
-
-A. Nayt
-B. La Nina
-C. Nilla Pizzi
-D. Rocco Papaleo
-""")
+    print(domanda)
     
 def raccogli_risposta() -> str:
     """
@@ -38,11 +45,11 @@ def genera_feedback(is_corretta : bool) -> str:
     else:
         return "Risposta sbagliata, ritenta!"
     
-def is_risposta_esatta(scelta : str) -> bool :
+def is_risposta_esatta(scelta : str, risposta_esatta : str) -> bool :
     """
     Questa funzione restituisce True se la risposta dell'utente è corretta
     """
-    if scelta.upper() == "A":
+    if scelta.upper() == risposta_esatta:
         return True
     else:
         return False
@@ -60,16 +67,19 @@ def mostra_feedback(messaggio: str) -> None:
     
 
 def main() :
-
+    content : str = leggi_file()
+    index : int = estrai_index(content)
+    domanda : str = estrai_domanda(content, index)
+    risposta : str = estrai_risposta(content, index)
     is_risposta_corretta = False
 
     while True :
-        mostra_domanda()    
+        mostra_domanda(domanda)    
         risposta_da_validare : str = raccogli_risposta()
         risposta_validata : bool = valida_scelta(risposta_da_validare)
     
-        if risposta_validata == True : 
-            is_risposta_corretta = is_risposta_esatta(risposta_da_validare)
+        if risposta_validata == True :
+            is_risposta_corretta = is_risposta_esatta(risposta_da_validare, risposta)
             feedback = genera_feedback(is_risposta_corretta)
         else:
             feedback = "Inserisci solo la risposta tra le optioni elencate"
@@ -79,6 +89,5 @@ def main() :
         if is_risposta_corretta == True :
             break
          
-
 #Entry point del nostro programma
 main()
