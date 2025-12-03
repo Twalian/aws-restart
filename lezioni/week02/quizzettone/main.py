@@ -1,5 +1,7 @@
-def leggi_file() -> str :
-    with open("domanda-1.txt", "r") as file :
+import sys
+
+def leggi_file(file_path : str) -> str :
+    with open(file_path, "r") as file :
         content = file.read()
         return content
     #print(len(content))
@@ -66,8 +68,9 @@ def mostra_feedback(messaggio: str) -> None:
           """)
     
 
-def main() :
-    content : str = leggi_file()
+def main()  :
+    file_path : str = sys.argv[1]
+    content : str = leggi_file(file_path)
     index : int = estrai_index(content)
     domanda : str = estrai_domanda(content, index)
     risposta : str = estrai_risposta(content, index)
