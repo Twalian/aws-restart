@@ -69,6 +69,30 @@ def mostra_feedback(messaggio: str) -> None:
     
 
 def main()  :
+
+    domande_list: list[str] = []
+
+    qa : dict[str, str] = {
+        "domanda" : None,
+        "risposta" : None
+    }
+
+    with open("domande.txt", "r") as f:
+
+        for i in f :
+            domande_list.append(i.strip())
+
+    content : str = leggi_file(F"domande_risposte/{domande_list[0]}")
+    index : int = estrai_index(content)
+    qa["domanda"] = estrai_domanda(content, index)
+    qa["risposta"] = estrai_risposta(content, index)
+
+    print(qa)
+
+
+    
+    
+    """
     file_path : str = sys.argv[1]
     content : str = leggi_file(file_path)
     index : int = estrai_index(content)
@@ -91,6 +115,7 @@ def main()  :
 
         if is_risposta_corretta == True :
             break
+    """
          
 #Entry point del nostro programma
 main()
