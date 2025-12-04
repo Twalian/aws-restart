@@ -45,7 +45,7 @@ def genera_feedback(is_corretta : bool) -> str:
     if is_corretta == True:
         return "Risposta corretta!"
     else:
-        return "Risposta sbagliata, ritenta!"
+        return "Risposta sbagliata!"
     
 def is_risposta_esatta(scelta : str, risposta_esatta : str) -> bool :
     """
@@ -66,7 +66,33 @@ def mostra_feedback(messaggio: str) -> None:
 {messaggio}
 {symbol}
           """)
-    
+
+def estrai_lista_domande(file_path : str) -> list[str] :
+    lista_domande : list[str] = []
+    with open("domande.txt", "r") as f:
+        for i in f :
+            lista_domande.append(i.strip())
+    return lista_domande
+
+
+def genera_statistiche(risultato_finale : list[dict[str, str |bool ]]) -> dict[str, int] :
+    statistica : dict[str, int] = {}
+
+    risposte_esatte : int = 0
+    risposte_sbagliate : int = 0
+
+    for i in risultato_finale:
+        
+
+        if i["risposta_corretta"] :
+            risposte_esatte += 1
+        else:
+            risposte_sbagliate += 1
+
+    statistica["risposte_esatte"] = risposte_esatte
+    statistica["risposte_errate"] = risposte_sbagliate
+
+    return statistica
 
 def main()  :
 
@@ -77,21 +103,45 @@ def main()  :
         "risposta" : None
     }
 
-    with open("domande.txt", "r") as f:
+    counter : int = 0
 
-        for i in f :
-            domande_list.append(i.strip())
+    feedback : str = ""
 
-    content : str = leggi_file(F"domande_risposte/{domande_list[0]}")
-    index : int = estrai_index(content)
-    qa["domanda"] = estrai_domanda(content, index)
-    qa["risposta"] = estrai_risposta(content, index)
-
-    print(qa)
-
-
+    is_risposta_corretta = False
     
-    
+    domande_list = estrai_lista_domande("domande.txt")
+    counter = len(domande_list)
+
+    risultato_finale : list[dict[str, str | bool]] = []
+
+    #print(f"Il numero di domande è: {counter}")
+
+    for q in range(counter):
+        risultato : dict[str, str | bool] = {}
+        content : str = leggi_file(F"domande_risposte/{domande_list[q]}")
+        index : int = estrai_index(content)
+        qa["domanda"] = estrai_domanda(content, index)
+        qa["risposta"] = estrai_risposta(content, index)
+        mostra_domanda(qa["domanda"])
+        risposta_da_validare : str = raccogli_risposta()
+        risposta_validata : bool = valida_scelta(risposta_da_validare)
+
+        if risposta_validata == True :
+            is_risposta_corretta = is_risposta_esatta(risposta_da_validare, qa["risposta"])
+            feedback = genera_feedback(is_risposta_corretta)
+            risultato["domanda"] = domande_list[q]
+            risultato["risposta_corretta"] = is_risposta_corretta
+            risultato_finale.append(risultato)
+        else:
+            feedback = "Inserisci solo la risposta tra le optioni elencate"
+        
+        mostra_feedback(feedback)
+
+    statistiche = genera_statistiche(risultato_finale)
+
+    print(f"Risposte corrette: {statistiche["risposte_esatte"]}")
+    print(f"Risposte sbagliate: {statistiche["risposte_errate"]}")    
+
     """
     file_path : str = sys.argv[1]
     content : str = leggi_file(file_path)
