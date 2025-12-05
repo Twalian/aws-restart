@@ -103,8 +103,9 @@ def naviga_tra_le_domande(contatore_domanda_attuale : int, domande_totali : int)
 
     while navigazione :
 
-        scelta_utente : str = input("<-- P (Domanda precedente)  ***  (Domanda successiva) S --> ")
-
+        print("<-- P (Domanda precedente)  ***  (Domanda successiva) S --> ")
+        scelta_utente : str = input(f"Oppure inserisci il numero della domanda che vuoi visualizzare (1 - {domande_totali}): ")
+        
         if scelta_utente.upper() == "P" :
 
             if contatore_domanda_attuale == 0 :
@@ -149,9 +150,13 @@ def naviga_tra_le_domande(contatore_domanda_attuale : int, domande_totali : int)
                     print("*"*30)
             return contatore_domanda_attuale
         
+        elif int(scelta_utente) > 0 and int(scelta_utente) <= domande_totali :
+            contatore_domanda_attuale = int(scelta_utente)-1
+            return contatore_domanda_attuale
+
         else :
             print("")
-            print("Inserisci solo P o S")
+            print(f"Inserisci solo P, S o valori compresi tra 1 e {domande_totali}")
             print("")
 
 def main()  :
@@ -190,7 +195,8 @@ def main()  :
             else:
                 risultato_finale.append(risultato)
 
-            mostra_feedback(feedback)
+            #mostra_feedback(feedback)
+            print("")
             counter_domanda_corrente = naviga_tra_le_domande(counter_domanda_corrente, lista_domande_lenght)  
         else:
             feedback = "Inserisci solo la risposta tra le optioni elencate"
