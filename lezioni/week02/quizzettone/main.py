@@ -1,170 +1,27 @@
-import sys
-
-def leggi_file(file_path : str) -> str :
-    with open(file_path, "r") as file :
-        content = file.read()
-        return content
-    #print(len(content))
-
-def estrai_index(content : str) -> int :
-    return content.index("£")
-   
-def estrai_domanda(content : str, index : int) -> str:
-    return content[0:index]
-
-def estrai_risposta(content : str, index : int) -> str:
-    return content[index+1:]
-    
-def mostra_domanda(domanda : str, domanda_attuale : int, domande_totali : int) -> None:
-    """
-    Questa funzione restituisce la domanda e le optioni di risposta
-    """
-    print(f"Domanda {domanda_attuale} di {domande_totali}")
-    print(domanda)
-    
-def raccogli_risposta() -> str:
-    """
-    Questa funzione si occupa solamente di restituire l'input dell'utente.
-    Il controllo avverrà in un'altra funzione.
-    """
-    return input("Inserisci la tua scelta: ")
-
-def valida_scelta(scelta: str) -> bool:
-    """
-    Questa funzione prende una un valore di tipo stringa e controlla che sia una delle possibili risposte.
-    """
-    scelta_tmp = scelta.upper()
-    if scelta_tmp == "A" or scelta_tmp == "B" or scelta_tmp == "C" or scelta_tmp == "D" :
-        return True
-    else:
-        return False
-    
-def genera_feedback(is_corretta : bool) -> str:
-    """
-    Questa funzione restituisce una stringa con un feedback personalizzato, indicando all'utente se ha risposto correttamente o meno. Questa funzione viene eseguita solo se la funzione di validazione valida_scelta() restituisce true
-    """
-    if is_corretta == True:
-        return "Risposta corretta!"
-    else:
-        return "Risposta sbagliata!"
-    
-def is_risposta_esatta(scelta : str, risposta_esatta : str) -> bool :
-    """
-    Questa funzione restituisce True se la risposta dell'utente è corretta
-    """
-    if scelta.upper() == risposta_esatta:
-        return True
-    else:
-        return False
-
-def mostra_feedback(messaggio: str) -> None:
-    """
-    Restituisce il feedback formattato nella maniera desiderata
-    """
-    symbol : str = "*"*30
-    print(f"""
-{symbol}
-{messaggio}
-{symbol}
-          """)
-
-def estrai_lista_domande(file_path : str) -> list[str] :
-    lista_domande : list[str] = []
-    with open("domande.txt", "r") as f:
-        for i in f :
-            lista_domande.append(i.strip())
-    return lista_domande
-
-
-def genera_statistiche(risultato_finale : list[dict[str, str |bool ]]) -> dict[str, int] :
-    statistica : dict[str, int] = {}
-
-    risposte_esatte : int = 0
-    risposte_sbagliate : int = 0
-
-    for i in risultato_finale:
-        
-
-        if i["risposta_corretta"] :
-            risposte_esatte += 1
-        else:
-            risposte_sbagliate += 1
-
-    statistica["risposte_esatte"] = risposte_esatte
-    statistica["risposte_errate"] = risposte_sbagliate
-
-    return statistica
-
-def naviga_tra_le_domande(contatore_domanda_attuale : int, domande_totali : int) -> int :
-
-    navigazione : bool = True
-
-    navigazione_prima_domanda : bool = False
-
-    while navigazione :
-
-        print("<-- P (Domanda precedente)  ***  (Domanda successiva) S --> ")
-        scelta_utente : str = input(f"Oppure inserisci il numero della domanda che vuoi visualizzare (1 - {domande_totali}): ")
-        
-        if scelta_utente.upper() == "P" :
-
-            if contatore_domanda_attuale == 0 :
-
-                print("")
-                print("*"*30)
-                print("Nessuna domanda precedente!")
-                print("*"*30)
-                print("")
-
-                navigazione_prima_domanda = True
-
-                while navigazione_prima_domanda :
-
-                    scelta_utente = input("R (Ripeti prima domanda)  ***  (Domanda successiva) S --> ")
-
-                    if scelta_utente.upper() == "S" :
-                        contatore_domanda_attuale += 1
-                        return contatore_domanda_attuale
-
-                    elif scelta_utente.upper() == "R" :
-                        contatore_domanda_attuale == 0
-                        return contatore_domanda_attuale
-
-                    else:
-                        print("") 
-                        print("Inserisci solo R o S")
-                        print("")
-                               
-            else :
-                contatore_domanda_attuale -= 1
-                return contatore_domanda_attuale
-            
-        elif scelta_utente.upper() == "S" :
-
-            if contatore_domanda_attuale < domande_totali :
-                contatore_domanda_attuale += 1
-                if contatore_domanda_attuale == domande_totali :
-                    print("")
-                    print("*"*30)
-                    print("Domande terminate!")
-                    print("*"*30)
-            return contatore_domanda_attuale
-        
-        elif int(scelta_utente) > 0 and int(scelta_utente) <= domande_totali :
-            contatore_domanda_attuale = int(scelta_utente)-1
-            return contatore_domanda_attuale
-
-        else :
-            print("")
-            print(f"Inserisci solo P, S o valori compresi tra 1 e {domande_totali}")
-            print("")
+from data.services import (
+    get_domanda,
+    get_lista_domande, 
+    valida_scelta, 
+    is_risposta_esatta,
+    estrai_domanda,
+    estrai_index,
+    estrai_risposta, 
+    genera_statistiche,
+    naviga_tra_le_domande,
+)
+from ui.console import (
+    mostra_feedback, 
+    mostra_domanda, 
+    genera_feedback, 
+    raccogli_risposta,
+)
 
 def main()  :
 
     lista_domande: list[str] = []
     risultato_finale : list[dict[str, str | bool]] = []
     domanda_e_risposta : dict[str, str] = {"domanda" : None, "risposta" : None }
-    lista_domande = estrai_lista_domande("domande.txt")
+    lista_domande = get_lista_domande("domande.txt")
 
     counter_domanda_corrente : int = 0
     lista_domande_lenght : int = len(lista_domande)
@@ -175,7 +32,7 @@ def main()  :
     while counter_domanda_corrente < lista_domande_lenght :
         
         risultato : dict[str, str | bool] = {}
-        content : str = leggi_file(F"domande_risposte/{lista_domande[counter_domanda_corrente]}")
+        content : str = get_domanda(F"domande_risposte/{lista_domande[counter_domanda_corrente]}")
         index : int = estrai_index(content)
         domanda_e_risposta["domanda"] = estrai_domanda(content, index)
         domanda_e_risposta["risposta"] = estrai_risposta(content, index)
@@ -207,8 +64,7 @@ def main()  :
     print("")
     print("--- Il tuo punteggio ---")
     print(f"Risposte corrette: {statistiche["risposte_esatte"]}")
-    print(f"Risposte sbagliate: {statistiche["risposte_errate"]}")    
-    
+    print(f"Risposte sbagliate: {statistiche["risposte_errate"]}")
          
 #Entry point del nostro programma
 main()
