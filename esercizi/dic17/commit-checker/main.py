@@ -104,6 +104,7 @@ def main() -> None:
 
             #TODO: il nome exit esiste come profilo
             if nome_utente == "exit":
+                print("Arrivederci!")
                 break
 
             print(f"Sto cercando {nome_utente}...")
@@ -146,7 +147,7 @@ def main() -> None:
     while step_tre :
 
         try:
-            #TODO: controllare si ci sono più branch e permettere di scegliere
+            #TODO: controllare se ci sono più branch e permettere di scegliere
             page_text = get_page(f"{BASE_URL}/{nome_utente}/{repository_list[int(scelta_utente)-1]}/commits/main/").text
             last_commit : str = re.search(PATTERN_COMMIT_DATETIME, page_text)
             
