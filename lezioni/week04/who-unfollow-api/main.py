@@ -1,4 +1,7 @@
-import uuid, datetime
+import uuid, datetime, os, json
+from requests import get
+
+URL = "https://api.github.com/users/emanuelegurini/followers"
 
 DATA = [
   {
@@ -65,6 +68,16 @@ DATA = [
     "site_admin": False
   }]
 
+def get_users(url: str) -> list[dict]:
+    page = 1
+    while True:
+        response = get(f"{url}?page={page}")
+        print(page)
+        if not "next" in response.headers["Link"]:
+            break
+        page += 1
+
+
 def extract_usernames(users: list[dict]) -> list[str]:
     usernames: list[str] = []
     for user in users:
@@ -76,18 +89,54 @@ def create_record(usernames: list[str]) -> dict:
     now_utc = datetime.datetime.now(datetime.timezone.utc)
     clean_date = now_utc.isoformat(timespec='milliseconds').replace('+00.00', 'Z')
     return {
-        "id": str(uuid.uuid4),
+        "id": str(uuid.uuid4()),
         "creationAt" : clean_date,
         "user" : usernames,
         "numberOfUsers" : len(usernames)
     }
 
+def create_json_db(db_name: str) -> bool:
+    """Crea un nuovo file db con lista vuota."""
+    # Crea la cartella se non esiste
+    os.makedirs(os.path.dirname(db_name), exist_ok=True)
+    
+    with open(db_name, "w") as f:
+        f.write("[]")
+
+    return True
+
+def check_if_json_db_has_correct_shape(db_name: str) -> bool:
+    """Verifica che il db esiste ed è nella forma corretta."""
+    if not os.path.isfile(db_name):
+        return False
+
+    with open(db_name, "r") as f:
+        data = json.load(f)
+        return isinstance(data, list)
+
+def save_json_db(db_name: str, new_record: dict) -> None:
+    """Salva il nuovo oggetto nel db."""
+    if not check_if_json_db_has_correct_shape(db_name):
+        create_json_db(db_name)
+
+    db_tmp: list[dict] = []
+
+    with open(db_name, "r") as f:
+        db_tmp.extend(json.load(f))
+
+    db_tmp.append(new_record)
+
+    with open(db_name, "w", encoding='utf-8') as f:
+        json.dump(db_tmp, f, indent=4, ensure_ascii=False)
+
 def main() -> None:
     print("Inizio programma")
+    """
     lista_utenti = extract_usernames(DATA)
-    print(lista_utenti)
-    print(create_record(lista_utenti))
-
+    record = create_record(lista_utenti)
+    save_json_db("db/db.json", record)
+    """
+    get_users(URL)
 
 if __name__ == "__main__":
     main()
